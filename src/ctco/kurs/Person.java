@@ -1,33 +1,42 @@
+package ctco.kurs;
+
 public class Person {
+    private static int counter = 0;
     private String fullName;
     private String phoneNumber;
     private String profession;
     private int age;
+    private int id;
 
-    public Person(String name, String number, String speciality, int years) {
+    Person(String name, String number, String speciality, int years) {
         fullName = name;
         phoneNumber = number;
         profession = speciality;
         age = years;
+        id = ++counter;
     }
 
-    public void showPersonInfo() {
+    void showPersonInfo() {
         System.out.println("Full name: " + fullName + " || Phone number: " + phoneNumber + " || Profession: " + profession + " || Age: " + age);
     }
 
-    public String getFullName() {
+    String getFullName() {
         return fullName;
     }
 
-    public String getPhoneNumber() {
+    String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public String getProfession() {
+    String getProfession() {
         return profession;
     }
 
-    public int getAge() {
+    int getAge() {
         return age;
+    }
+
+    public int getId() {
+        return id;
     }
 }

@@ -1,3 +1,5 @@
+package ctco.kurs;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -6,13 +8,14 @@ import java.util.*;
 public class Main {
     private static final File PERSON_LIST = new File("persons.txt");
     private static Scanner scanner = new Scanner(System.in);
-    private static Set validOperationNumbers = Set.of(1, 2, 3, 4, 5);
+    private static Set<Character> validPhoneNumberKeys = Set.of('1', '2', '3', '4', '5', '6', '7', '8', '9');
+    private static Set<Integer> validOperationNumbers = Set.of(1, 2, 3, 4, 5, 6);
     private static List<Person> personList = new ArrayList<>();
 
     public static void main(String[] args) {
         loadEntries();
 
-        for(;;) {
+        for (; ; ) {
             showAvailableOperations();
 
             int chosenOperationNumber = chooseOperationNumber();
@@ -27,15 +30,18 @@ public class Main {
                 createNewEntry();
                 break;
             case 2:
-                System.out.println("Ain't working yet ;<");
+                deleteEntry();
                 break;
             case 3:
                 personList.forEach(Person::showPersonInfo);
                 break;
             case 4:
-                System.out.println("4");
+                showFAQ();
                 break;
             case 5:
+                saveEntries();
+                break;
+            case 6:
                 saveEntries();
                 System.exit(0);
         }
@@ -70,33 +76,59 @@ public class Main {
         System.out.println("2. Delete entry");
         System.out.println("3. Show existing entries");
         System.out.println("4. FAQ");
-        System.out.println("5. Exit");
+        System.out.println("5. Save changes");
+        System.out.println("6. Exit");
         System.out.println();
     }
 
     private static void createNewEntry() {
         System.out.println("Please enter persons name:");
         String name = scanner.next();
+        scanner.skip(".*");
 
         System.out.println("Please enter persons surname:");
         String surname = scanner.next();
+        scanner.skip(".*");
 
         System.out.println("Please enter persons phone number");
-        String number = scanner.next();
+        String number = "";
+        boolean validPhoneNumberEntered = false;
+
+        while (!validPhoneNumberEntered) {
+            try {
+                number = scanner.next();
+                scanner.skip(".*");
+
+                for (char c: number.toCharArray()) {
+                    if (validPhoneNumberKeys.contains(c) && number.toCharArray().length > 4) {
+                        validPhoneNumberEntered = true;
+                    } else {
+                        validPhoneNumberEntered = false;
+                        break;
+                    }
+                }
+
+                if (!validPhoneNumberEntered) {
+                    System.out.println("Please enter a valid number ( more than 5 symbols and containing only numbers)");
+                }
+
+            } catch (InputMismatchException e) {
+                e.printStackTrace();
+                scanner.next();
+            }
+        }
 
         System.out.println("Please enter persons age:");
         int age = scanner.nextInt();
+        scanner.skip(".*");
 
         System.out.println("Please enter persons profession:");
         String profession = scanner.next();
+        scanner.skip(".*");
 
         Person person = new Person(name + " " + surname, number, profession, age);
         personList.add(person);
     }
-
-  /*  private static void showCurrentEntries() {
-        personList.forEach(Person::showPersonInfo);
-    }*/
 
     private static void saveEntries() {
         try (PrintWriter fileOut = new PrintWriter(PERSON_LIST)) {
@@ -117,5 +149,40 @@ public class Main {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void deleteEntry() {
+        int maxEntryIndex = 0;
+
+        for (Person person : personList) {
+            maxEntryIndex++;
+            System.out.print(maxEntryIndex + " ");
+            person.showPersonInfo();
+        }
+
+        System.out.println("Please choose the number of a person you would like to remove");
+
+        boolean validNumberEntered = false;
+        int chosenEntryNumber;
+
+        while (!validNumberEntered) {
+            try {
+                chosenEntryNumber = scanner.nextInt();
+                validNumberEntered = true;
+                if (chosenEntryNumber > 0 && chosenEntryNumber <= maxEntryIndex) {
+                    validNumberEntered = true;
+                    personList.remove(chosenEntryNumber - 1);
+                } else {
+                    System.out.println("Please provide a valid entry number");
+                }
+            } catch (InputMismatchException e) {
+                e.printStackTrace();
+                scanner.next();
+            }
+        }
+    }
+
+    private static void showFAQ() {
+        System.out.println("Enter:\n 1 to create a new person entry\n 2 to delete entry\n 3 to show a list of existing persons\n 4 to show this help menu\n 5 to save changes\n 6 to terminate program");
     }
 }
