@@ -14,4 +14,20 @@ public class Person {
     public void showPersonInfo() {
         System.out.println("Full name: " + fullName + " || Phone number: " + phoneNumber + " || Profession: " + profession + " || Age: " + age);
     }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getProfession() {
+        return profession;
+    }
+
+    public int getAge() {
+        return age;
+    }
 }

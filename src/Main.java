@@ -1,4 +1,6 @@
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class Main {
@@ -8,10 +10,12 @@ public class Main {
     private static List<Person> personList = new ArrayList<>();
 
     public static void main(String[] args) {
+        loadEntries();
+
         for(;;) {
             showAvailableOperations();
 
-            int chosenOperationNumber = chooseOperation();
+            int chosenOperationNumber = chooseOperationNumber();
 
             handleOperation(chosenOperationNumber);
         }
@@ -26,25 +30,26 @@ public class Main {
                 System.out.println("Ain't working yet ;<");
                 break;
             case 3:
-                showCurrentEntries();
+                personList.forEach(Person::showPersonInfo);
                 break;
             case 4:
                 System.out.println("4");
                 break;
             case 5:
-                return;
+                saveEntries();
+                System.exit(0);
         }
     }
 
-    private static int chooseOperation() {
+    private static int chooseOperationNumber() {
         boolean validNumberEntered = false;
-        int chosenOperation = 0;
+        int chosenOperationNumber = 0;
 
         while (!validNumberEntered) {
             try {
-                chosenOperation = scanner.nextInt();
+                chosenOperationNumber = scanner.nextInt();
 
-                if (validOperationNumbers.contains(chosenOperation)) {
+                if (validOperationNumbers.contains(chosenOperationNumber)) {
                     validNumberEntered = true;
                 } else {
                     System.out.println("Please provide a valid operation number");
@@ -56,15 +61,17 @@ public class Main {
             }
         }
 
-        return chosenOperation;
+        return chosenOperationNumber;
     }
 
     private static void showAvailableOperations() {
+        System.out.println();
         System.out.println("1. Create new entry");
         System.out.println("2. Delete entry");
         System.out.println("3. Show existing entries");
         System.out.println("4. FAQ");
         System.out.println("5. Exit");
+        System.out.println();
     }
 
     private static void createNewEntry() {
@@ -74,7 +81,7 @@ public class Main {
         System.out.println("Please enter persons surname:");
         String surname = scanner.next();
 
-        System.out.println("Please enter phone number");
+        System.out.println("Please enter persons phone number");
         String number = scanner.next();
 
         System.out.println("Please enter persons age:");
@@ -87,7 +94,28 @@ public class Main {
         personList.add(person);
     }
 
-    private static void showCurrentEntries() {
+  /*  private static void showCurrentEntries() {
         personList.forEach(Person::showPersonInfo);
+    }*/
+
+    private static void saveEntries() {
+        try (PrintWriter fileOut = new PrintWriter(PERSON_LIST)) {
+            for (Person person : personList) {
+                fileOut.printf("%s %s %s %d\n", person.getFullName(), person.getPhoneNumber(), person.getProfession(), person.getAge());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void loadEntries() {
+        try (Scanner fileIn = new Scanner(PERSON_LIST)) {
+            while (fileIn.hasNext()) {
+                Person person = new Person(fileIn.next() + " " + fileIn.next(), fileIn.next(), fileIn.next(), fileIn.nextInt());
+                personList.add(person);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
