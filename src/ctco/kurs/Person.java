@@ -1,23 +1,36 @@
 package ctco.kurs;
 
-public class Person {
-    private static int counter = 0;
+class Person extends Record {
     private String fullName;
     private String phoneNumber;
     private String profession;
     private int age;
-    private int id;
 
     Person(String name, String number, String speciality, int years) {
         fullName = name;
         phoneNumber = number;
         profession = speciality;
         age = years;
-        id = ++counter;
     }
 
-    void showPersonInfo() {
+    @Override
+    public boolean contains(String str) {
+        return fullName.contains(str) || phoneNumber.contains(str) || profession.contains(str);
+    }
+
+    @Override
+    public void showRecordInfo() {
         System.out.println("Full name: " + fullName + " || Phone number: " + phoneNumber + " || Profession: " + profession + " || Age: " + age);
+    }
+
+    @Override
+    public String getPrefix() {
+        return "p";
+    }
+
+    @Override
+    public void askData() {
+
     }
 
     String getFullName() {
@@ -36,7 +49,8 @@ public class Person {
         return age;
     }
 
-    public int getId() {
-        return id;
+    @Override
+    public String toString() {
+        return fullName + " " + phoneNumber + " " + profession + " " + age;
     }
 }

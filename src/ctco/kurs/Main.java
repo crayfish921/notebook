@@ -6,11 +6,12 @@ import java.io.PrintWriter;
 import java.util.*;
 
 public class Main {
-    private static final File PERSON_LIST = new File("persons.txt");
+    private static final File RECORD_LIST = new File("records.txt");
     private static Scanner scanner = new Scanner(System.in);
     private static Set<Character> validPhoneNumberKeys = Set.of('1', '2', '3', '4', '5', '6', '7', '8', '9');
-    private static Set<Integer> validOperationNumbers = Set.of(1, 2, 3, 4, 5, 6);
-    private static List<Person> personList = new ArrayList<>();
+    private static Set<Integer> validOperationNumbers = Set.of(1, 2, 3, 4, 5, 6, 7);
+    private static Set<Integer> validChoiceNumbers = Set.of(1, 2);
+    private static List<Record> recordList = new ArrayList<>();
 
     public static void main(String[] args) {
         loadEntries();
@@ -33,7 +34,7 @@ public class Main {
                 deleteEntry();
                 break;
             case 3:
-                personList.forEach(Person::showPersonInfo);
+                recordList.forEach(Record::showRecordInfo);
                 break;
             case 4:
                 showFAQ();
@@ -42,6 +43,9 @@ public class Main {
                 saveEntries();
                 break;
             case 6:
+                search();
+                break;
+            case 7:
                 saveEntries();
                 System.exit(0);
         }
@@ -77,11 +81,12 @@ public class Main {
         System.out.println("3. Show existing entries");
         System.out.println("4. FAQ");
         System.out.println("5. Save changes");
-        System.out.println("6. Exit");
+        System.out.println("6. Search");
+        System.out.println("7. Exit");
         System.out.println();
     }
 
-    private static void createNewEntry() {
+    private static void createPersonEntry() {
         System.out.println("Please enter persons name:");
         String name = scanner.next();
         scanner.skip(".*");
@@ -127,13 +132,50 @@ public class Main {
         scanner.skip(".*");
 
         Person person = new Person(name + " " + surname, number, profession, age);
-        personList.add(person);
+        recordList.add(person);
+    }
+
+    private static void createStickyNote() {
+        System.out.println("Please enter note text");
+        String note = scanner.next();
+        scanner.skip(".*");
+
+        StickyNote sn = new StickyNote(note);
+        recordList.add(sn);
+    }
+
+    private static void createNewEntry() {
+        System.out.println("Please choose the note type");
+        System.out.println("1. Sticky note");
+        System.out.println("2. Person");
+
+        int selectedNumber = 0;
+        boolean correctSelection = false;
+
+        while (!correctSelection) {
+            selectedNumber = scanner.nextInt();
+
+            if (validChoiceNumbers.contains(selectedNumber)) {
+                correctSelection = true;
+            } else {
+                System.out.println("Please choose correct number");
+            }
+        }
+
+        switch (selectedNumber) {
+            case 1:
+                createStickyNote();
+                break;
+            case 2:
+                createPersonEntry();
+                break;
+        }
     }
 
     private static void saveEntries() {
-        try (PrintWriter fileOut = new PrintWriter(PERSON_LIST)) {
-            for (Person person : personList) {
-                fileOut.printf("%s %s %s %d\n", person.getFullName(), person.getPhoneNumber(), person.getProfession(), person.getAge());
+        try (PrintWriter fileOut = new PrintWriter(RECORD_LIST)) {
+            for (Record record : recordList) {
+                fileOut.println(record.getPrefix() + " " + record);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -141,10 +183,15 @@ public class Main {
     }
 
     private static void loadEntries() {
-        try (Scanner fileIn = new Scanner(PERSON_LIST)) {
+        try (Scanner fileIn = new Scanner(RECORD_LIST)) {
             while (fileIn.hasNext()) {
-                Person person = new Person(fileIn.next() + " " + fileIn.next(), fileIn.next(), fileIn.next(), fileIn.nextInt());
-                personList.add(person);
+                if (fileIn.next().equals("p")) {
+                    Person person = new Person(fileIn.next() + " " + fileIn.next(), fileIn.next(), fileIn.next(), fileIn.nextInt());
+                    recordList.add(person);
+                } else {
+                    StickyNote stickyNote = new StickyNote(fileIn.next());
+                    recordList.add(stickyNote);
+                }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -154,10 +201,10 @@ public class Main {
     private static void deleteEntry() {
         int maxEntryIndex = 0;
 
-        for (Person person : personList) {
+        for (Record record : recordList) {
             maxEntryIndex++;
             System.out.print(maxEntryIndex + " ");
-            person.showPersonInfo();
+            record.showRecordInfo();
         }
 
         System.out.println("Please choose the number of a person you would like to remove");
@@ -170,7 +217,7 @@ public class Main {
                 chosenEntryNumber = scanner.nextInt();
                 if (chosenEntryNumber > 0 && chosenEntryNumber <= maxEntryIndex) {
                     validNumberEntered = true;
-                    personList.remove(chosenEntryNumber - 1);
+                    recordList.remove(chosenEntryNumber - 1);
                 } else {
                     System.out.println("Please provide a valid entry number");
                 }
@@ -183,5 +230,16 @@ public class Main {
 
     private static void showFAQ() {
         System.out.println("Enter:\n 1 to create a new person entry\n 2 to delete entry\n 3 to show a list of existing persons\n 4 to show this help menu\n 5 to save changes\n 6 to terminate program");
+    }
+
+    private static void search() {
+        System.out.println("What do you want to find?");
+        String searchTerm = scanner.next();
+
+        for (Record record : recordList) {
+            if (record.contains(searchTerm)) {
+                record.showRecordInfo();
+            }
+        }
     }
 }
