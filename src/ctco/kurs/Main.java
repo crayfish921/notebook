@@ -236,10 +236,8 @@ public class Main {
         System.out.println("What do you want to find?");
         String searchTerm = scanner.next();
 
-        for (Record record : recordList) {
-            if (record.contains(searchTerm)) {
-                record.showRecordInfo();
-            }
-        }
+        recordList.stream()
+                    .filter(r -> r.contains(searchTerm))
+                    .forEach(Record::showRecordInfo);
     }
 }
