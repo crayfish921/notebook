@@ -168,7 +168,6 @@ public class Main {
         while (!validNumberEntered) {
             try {
                 chosenEntryNumber = scanner.nextInt();
-                validNumberEntered = true;
                 if (chosenEntryNumber > 0 && chosenEntryNumber <= maxEntryIndex) {
                     validNumberEntered = true;
                     personList.remove(chosenEntryNumber - 1);
