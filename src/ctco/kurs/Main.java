@@ -3,13 +3,14 @@ package ctco.kurs;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.time.LocalTime;
 import java.util.*;
 
 public class Main {
     private static final File RECORD_LIST = new File("records.txt");
     private static Scanner scanner = new Scanner(System.in);
     private static Set<Character> validPhoneNumberKeys = Set.of('1', '2', '3', '4', '5', '6', '7', '8', '9');
-    private static Set<Integer> validOperationNumbers = Set.of(1, 2, 3, 4, 5, 6, 7);
+    private static Set<Integer> validOperationNumbers = Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
     private static Set<Integer> validChoiceNumbers = Set.of(1, 2);
     private static List<Record> recordList = new ArrayList<>();
 
@@ -18,9 +19,7 @@ public class Main {
 
         for (; ; ) {
             showAvailableOperations();
-
             int chosenOperationNumber = chooseOperationNumber();
-
             handleOperation(chosenOperationNumber);
         }
     }
@@ -46,9 +45,35 @@ public class Main {
                 search();
                 break;
             case 7:
+                isStickyNoteExpired();
+                break;
+            case 8:
+                dismiss();
+                break;
+            case 9:
                 saveEntries();
                 System.exit(0);
         }
+    }
+
+    private static void dismiss() {
+        int maxEntryIndex = 0;
+
+        for (Record record : recordList) {
+            maxEntryIndex++;
+            System.out.print(maxEntryIndex + " ");
+            record.showRecordInfo();
+        }
+
+        System.out.println("PICK ID");
+        int id = scanner.nextInt();
+
+        Optional<Expirable> first = recordList.stream()
+                .filter(record -> record.getId() == id)
+                .filter(record -> record instanceof Expirable)
+                .map(record -> (Expirable)record)
+                .findFirst();
+        first.ifPresent(Expirable::dismiss);
     }
 
     private static int chooseOperationNumber() {
@@ -82,8 +107,20 @@ public class Main {
         System.out.println("4. FAQ");
         System.out.println("5. Save changes");
         System.out.println("6. Search");
-        System.out.println("7. Exit");
+        System.out.println("7. Is sticky note expired");
+        System.out.println("8. Dismiss");
+        System.out.println("9. Exit");
         System.out.println();
+    }
+
+    private static void isStickyNoteExpired() {
+        recordList.stream()
+                .filter(r -> r instanceof Expirable)
+                .map(r -> {
+                    r.showRecordInfo();
+                    return (Expirable)r;
+                })
+                .forEach(r -> System.out.println(r.isExpired() ? " Expired" : " Not expired"));
     }
 
     private static void createPersonEntry() {
@@ -104,7 +141,7 @@ public class Main {
                 number = scanner.next();
                 scanner.skip(".*");
 
-                for (char c: number.toCharArray()) {
+                for (char c : number.toCharArray()) {
                     if (validPhoneNumberKeys.contains(c) && number.toCharArray().length > 4) {
                         validPhoneNumberEntered = true;
                     } else {
@@ -140,8 +177,22 @@ public class Main {
         String note = scanner.next();
         scanner.skip(".*");
 
+        LocalTime now = LocalTime.now();
+
+        System.out.println("How many hours do you want to pass before getting the expiration alarm?");
+        int hoursBeforeAlarm = scanner.nextInt();
+
+        Alarm alarm = new Alarm(note, now.getHour() + hoursBeforeAlarm, now.getMinute(), now.getSecond());
+        recordList.add(alarm);
+        scanner.skip(".*");
+
+/*
+        Reminder reminder = new Reminder(note, 12, 12, 12, 1992, 12, 1);
+        recordList.add(reminder);
+
+
         StickyNote sn = new StickyNote(note);
-        recordList.add(sn);
+        recordList.add(sn);*/
     }
 
     private static void createNewEntry() {
@@ -237,7 +288,7 @@ public class Main {
         String searchTerm = scanner.next();
 
         recordList.stream()
-                    .filter(r -> r.contains(searchTerm))
-                    .forEach(Record::showRecordInfo);
+                .filter(r -> r.contains(searchTerm))
+                .forEach(Record::showRecordInfo);
     }
 }

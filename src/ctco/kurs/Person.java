@@ -6,11 +6,11 @@ class Person extends Record {
     private String profession;
     private int age;
 
-    Person(String name, String number, String speciality, int years) {
-        fullName = name;
-        phoneNumber = number;
-        profession = speciality;
-        age = years;
+    Person(String fullName, String phoneNumber, String profession, int age) {
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.profession = profession;
+        this.age = age;
     }
 
     @Override
@@ -29,25 +29,7 @@ class Person extends Record {
     }
 
     @Override
-    public void askData() {
-
-    }
-
-    String getFullName() {
-        return fullName;
-    }
-
-    String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    String getProfession() {
-        return profession;
-    }
-
-    int getAge() {
-        return age;
-    }
+    public void askData() { }
 
     @Override
     public String toString() {
