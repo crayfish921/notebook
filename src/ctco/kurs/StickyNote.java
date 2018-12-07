@@ -7,11 +7,11 @@ class StickyNote extends Record {
         text = note;
     }
 
-    public String getText() {
+    String getText() {
         return text;
     }
 
-    public void setText(String text) {
+    void setText(String text) {
         this.text = text;
     }
 

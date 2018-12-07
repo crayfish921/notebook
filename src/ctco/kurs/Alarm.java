@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class Alarm extends StickyNote implements Expirable {
+class Alarm extends StickyNote implements Expirable {
     private LocalDate dismissedAt;
     private LocalTime time;
     private boolean dismissed;
@@ -14,11 +14,11 @@ public class Alarm extends StickyNote implements Expirable {
         this.time = LocalTime.of(hour, minute, second);
     }
 
-    public LocalTime getTime() {
+    LocalTime getTime() {
         return this.time;
     }
 
-    public String getFormattedTime() {
+    String getFormattedTime() {
         return this.time.format(DateTimeFormatter.ISO_DATE);
     }
 
@@ -33,7 +33,7 @@ public class Alarm extends StickyNote implements Expirable {
         return !this.dismissed && this.time.compareTo(LocalTime.now()) < 0;
     }
 
-    public void setTime(LocalTime time) {
+    void setTime(LocalTime time) {
         this.time = time;
     }
 }

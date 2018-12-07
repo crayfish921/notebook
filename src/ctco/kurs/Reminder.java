@@ -4,7 +4,7 @@ package ctco.kurs;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Reminder extends Alarm implements Expirable {
+class Reminder extends Alarm implements Expirable {
     private LocalDateTime date;
     private boolean dismissed;
 
@@ -13,15 +13,15 @@ public class Reminder extends Alarm implements Expirable {
         this.date = LocalDateTime.of(year, month, day, hour, minute, second);
     }
 
-    public LocalDateTime getDate() {
+    LocalDateTime getDate() {
         return date;
     }
 
-    public String getFormattedDate() {
+    String getFormattedDate() {
         return this.date.format(DateTimeFormatter.ISO_DATE);
     }
 
-    public void setDate(LocalDateTime date) {
+    void setDate(LocalDateTime date) {
         this.date = date;
     }
 

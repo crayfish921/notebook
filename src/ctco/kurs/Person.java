@@ -6,7 +6,12 @@ class Person extends Record {
     private String profession;
     private int age;
 
+    Person() {
+        //logic
+    }
+
     Person(String fullName, String phoneNumber, String profession, int age) {
+        this();
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.profession = profession;

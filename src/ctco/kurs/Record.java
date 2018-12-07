@@ -1,6 +1,6 @@
 package ctco.kurs;
 
-public abstract class Record {
+abstract class Record {
     private static int counter = 0;
     private int id;
 
@@ -8,19 +8,19 @@ public abstract class Record {
         id = ++counter;
     }
 
-    public abstract void showRecordInfo();
+    abstract void showRecordInfo();
 
-    public abstract boolean contains(String str);
+    abstract boolean contains(String str);
 
-    public abstract String getPrefix();
+    abstract String getPrefix();
 
-    public abstract void askData();
+    abstract void askData();
 
-    public int getId() {
+    int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    void setId(int id) {
         this.id = id;
     }
 }
